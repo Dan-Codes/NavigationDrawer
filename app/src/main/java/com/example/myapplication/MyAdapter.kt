@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.gson.Gson
 
-var movieList: List<MovieData> = Gson().fromJson(movies, Array<MovieData>::class.java).asList()
+
 val posterTable: MutableMap<String, Int> = mutableMapOf()
 class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : BaseAdapter() {
 

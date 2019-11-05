@@ -53,7 +53,7 @@ class GalleryFragment : Fragment() {
             if(view == null)
                 Log.d("MY DEBUG", "List Fragment - OnItemClick - No View")
             val movie = adapter.getItem(position) as MovieData
-            //listener = activity as MainActivity
+            listener = activity as ListViewActivity
             onItemClicked(movie, position, view)
             Log.d("MY DEBUG", "testing pressed")
         }

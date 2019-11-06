@@ -5,9 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -68,7 +68,7 @@ class GalleryFragment : Fragment() {
         listViewFrame.setOnItemLongClickListener { parent, view, position, id ->
             Log.d("MY DEBUG", "testing pressed")
             activity!!.startActionMode(ActionBarCallBack(position))
-            myListener = activity as MyMovieListViewAdapter
+            this.myListener = myListener
             myListener!!.onItemLongClickedFromAdapter(position)
 //            items[position].checked = isChecked
 //            notifyDataSetChanged()

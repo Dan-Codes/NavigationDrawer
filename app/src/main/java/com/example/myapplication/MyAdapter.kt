@@ -9,11 +9,20 @@ import android.widget.BaseAdapter
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.myapplication.ui.gallery.GalleryFragment
 import com.google.gson.Gson
 
 
 val posterTable: MutableMap<String, Int> = mutableMapOf()
-class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : BaseAdapter() {
+class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : BaseAdapter(), GalleryFragment.MyItemClickListener {
+    override fun onItemLongClickedFromAdapter(position: Int) {
+//        items[position].checked = isEnabled(position)
+//        notifyDataSetChanged()
+    }
+
+    override fun onOverflowMenuClickedFromAdapter(view: View, position: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
 
     val genreTable: MutableMap<Int, String> = mutableMapOf()
@@ -69,6 +78,12 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
         return items.size
     }
 
+
+    fun findFirst(query:String) : Int{
+        var position :Int=0
+        var pos  = posterTable.contains(query)
+        return position
+    }
     fun onMovieSelect(v: View) {
         var movieList: List<MovieData> = Gson().fromJson(movies, Array<MovieData>::class.java).asList()
         //val title = findViewById<Button>(v.id).text.toString()
@@ -118,9 +133,42 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
         Log.d("MY DEBUG", "Remaining Movies " + items.size)
     }
 
+    fun addMovies(position: Int) {
+        for (i in items.indices) {
+            val movie = items[i]
+            if (i == position) {
+                items[i].checked = false
+                movie.checked = false
+                items.add(i + 1, movie)
+            }
+        }
+        notifyDataSetChanged()
+    }
+
+    fun deleteMovies(position: Int) {
+// This looks bad but works
+        var cnt = 0
+        for (i in 0 until items.size)
+
+            if (items[i].checked!!)
+                cnt += 1
+        for (i in 0 until cnt) {
+            for (j in items.indices) {
+                if (items[j].checked!!) {
+                    items.removeAt(j)
+                    break
+                }
+            }
+        }
+        notifyDataSetChanged()
+        Log.d("MY DEBUG", "Remaining Movies " + items.size)
+    }
+
     interface MyItemClickListener {
         fun onItemClickedFromAdapter(movie : MovieData)
         fun onItemLongClickedFromAdapter(position : Int)
+        fun onOverflowMenuClickedFromAdapter(view: View, position: Int)
+
     }
 
     private class ViewHolder(view: View) {

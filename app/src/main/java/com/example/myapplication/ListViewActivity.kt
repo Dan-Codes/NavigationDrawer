@@ -34,10 +34,13 @@ class ListViewActivity : AppCompatActivity(), GalleryFragment.OnListViewInteract
         supportFragmentManager.beginTransaction().replace(view.id, fragment).commit()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.movie_list_toolbar, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        return super.onCreateOptionsMenu(menu)
+//
+//        if (menu?.findItem(R.id.action_search) == null) {
+//            menuInflater.inflate(R.menu.movie_search_toolbar, menu)
+//        }
+//    }
 
     override fun onListViewInteraction(movie: MovieData, position: Int, view: View) {
         Log.d("test", "pressed")

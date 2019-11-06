@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/movie_image"
-        android:title="image_Movies"
+        android:id="@+id/action_dup"
+        android:title="Duplicate Selected Movies"
         app:showAsAction="ifRoom|withText"
-        android:icon="@drawable/old"/>
+        android:icon="@drawable/ic_content_copy"/>
+    <item
+        android:id="@+id/action_rem"
+        android:title="Delete Selected Movies"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_delete"/>
 </menu>

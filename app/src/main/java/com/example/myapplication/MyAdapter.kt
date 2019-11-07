@@ -14,13 +14,16 @@ import com.google.gson.Gson
 
 
 val posterTable: MutableMap<String, Int> = mutableMapOf()
-class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : BaseAdapter(), GalleryFragment.MyItemClickListener {
-    override fun onItemLongClickedFromAdapter(position: Int) {
-//        items[position].checked = isEnabled(position)
-//        notifyDataSetChanged()
+class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : BaseAdapter(){
+    private lateinit var listener: MyMovieListViewAdapter.MyItemClickListener
+
+    fun onItemLongClickedFromAdapter(position: Int) {
+        items[position].checked = isEnabled(position)
+        Log.i("ttt",position.toString())
+        notifyDataSetChanged()
     }
 
-    override fun onOverflowMenuClickedFromAdapter(view: View, position: Int) {
+    fun onOverflowMenuClickedFromAdapter(view: View, position: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -50,6 +53,11 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
         }
         val movie = items[position]
         viewHolder.img.setImageResource(posterTable[movie.title]!!)
+        viewHolder.img.setOnClickListener {
+            Log.d("test", "called1")
+
+            listener.onOverflowMenuClickedFromAdapter(it,position)
+        }
         viewHolder.txt1.text = movie.title!!
         var length = movie.overview!!.length
         length = if (length > 150) 150 else length
@@ -78,10 +86,26 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
         return items.size
     }
 
+    fun setMyItemClickListener ( listener: MyMovieListViewAdapter.MyItemClickListener){
+        this.listener = listener
+    }
+
+
+
 
     fun findFirst(query:String) : Int{
         var position :Int=0
-        var pos  = posterTable.contains(query)
+        for (i in items.indices) {
+            val movie = items[i]
+            if (query != null) {
+                var check: Boolean = movie.title?.contains(query)!!
+                if (check) {
+                    return position
+                }
+                position++
+            }
+        }
+
         return position
     }
     fun onMovieSelect(v: View) {
@@ -147,19 +171,12 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
 
     fun deleteMovies(position: Int) {
 // This looks bad but works
-        var cnt = 0
-        for (i in 0 until items.size)
-
-            if (items[i].checked!!)
-                cnt += 1
-        for (i in 0 until cnt) {
             for (j in items.indices) {
-                if (items[j].checked!!) {
+                if (j == position) {
                     items.removeAt(j)
                     break
                 }
             }
-        }
         notifyDataSetChanged()
         Log.d("MY DEBUG", "Remaining Movies " + items.size)
     }
@@ -176,6 +193,7 @@ class MyMovieListViewAdapter(val items : ArrayList<MovieData>, val type: Int) : 
         var txt1: TextView = view.findViewById(R.id.title)
         var txt2: TextView = view.findViewById(R.id.description)
         var checkbox: CheckBox? = view.findViewById(R.id.checkBox)
+
     }
 
 

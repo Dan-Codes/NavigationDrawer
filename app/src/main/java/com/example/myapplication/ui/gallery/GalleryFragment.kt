@@ -5,13 +5,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_gallery.*
@@ -19,10 +24,18 @@ import kotlinx.android.synthetic.main.fragment_list_view.*
 import kotlinx.android.synthetic.main.fragment_list_view.Delete
 import kotlinx.android.synthetic.main.fragment_list_view.Duplicate
 import kotlinx.android.synthetic.main.fragment_list_view.listViewFrame
+import kotlinx.android.synthetic.main.mylistlayout.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-class GalleryFragment : Fragment() {
+class GalleryFragment : Fragment(), MyMovieListViewAdapter.MyItemClickListener {
+    override fun onItemClickedFromAdapter(movie: MovieData) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onItemLongClickedFromAdapter(position: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -32,7 +45,6 @@ class GalleryFragment : Fragment() {
     private var myListener: MyItemClickListener? = null
     private val movies = MovieList()
     val adapter = MyMovieListViewAdapter(ArrayList(movies.movieList), 1)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -53,6 +65,10 @@ class GalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val layoutManager = LinearLayoutManager(view.context)
+        //listViewFrame.hasFixedSize()
+        //listViewFrame.layoutManager = layoutManager
+        adapter.setMyItemClickListener(this)
         listViewFrame.adapter = adapter
         listViewFrame.setOnItemClickListener { parent, view, position, id ->
             if(parent == null)
@@ -68,12 +84,14 @@ class GalleryFragment : Fragment() {
         listViewFrame.setOnItemLongClickListener { parent, view, position, id ->
             Log.d("MY DEBUG", "testing pressed")
             activity!!.startActionMode(ActionBarCallBack(position))
-            this.myListener = myListener
-            myListener!!.onItemLongClickedFromAdapter(position)
-//            items[position].checked = isChecked
-//            notifyDataSetChanged()
+            //this.myListener = myListener
+            adapter.onItemLongClickedFromAdapter(position)
             true
         }
+        /*list_row_image.setOnClickListener {
+            onOverflowMenuClickedFromAdapter(it,)
+        }*/
+
         Delete.setOnClickListener {
             adapter.deleteMovies()
             adapter.notifyDataSetChanged()
@@ -84,9 +102,7 @@ class GalleryFragment : Fragment() {
         }
     }
 
-    fun setMyItemClickListener ( listener: MyItemClickListener){
-        this.myListener = listener
-    }
+
 
     interface MyItemClickListener {
         fun onItemLongClickedFromAdapter(position : Int)
@@ -109,16 +125,18 @@ class GalleryFragment : Fragment() {
             inflater?.inflate(R.menu.movie_search_toolbar, menu)
         val search = menu?.findItem(R.id.action_search)!!.actionView as SearchView
         if ( search != null ){
+            //search.setOnClickListener {  }
             search.setOnQueryTextListener( object: SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-//                    val pos = adapter.findFirst( query!!)
-//                    if (pos >= 0) {
-//                        //rview3.smoothScrollToPosition(pos)
-//                        Toast.makeText(context, "Search Movie " + query + " found ... ", Toast.LENGTH_SHORT).show()
-//                    } else {
-//                        //rview3.smoothScrollToPosition(0)
-//                        Toast.makeText(context, "Search Movie " + query + " not found ... ", Toast.LENGTH_SHORT).show()
-//                    }
+                    val pos = adapter.findFirst( query!!)
+                    if (pos >= 0) {
+
+                        listViewFrame.smoothScrollToPosition(pos)
+                        Toast.makeText(context, "Search Movie " + query + " found ... ", Toast.LENGTH_SHORT).show()
+                    } else {
+                        listViewFrame.smoothScrollToPosition(0)
+                        Toast.makeText(context, "Search Movie " + query + " not found ... ", Toast.LENGTH_SHORT).show()
+                    }
                     return true
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
@@ -134,11 +152,11 @@ class GalleryFragment : Fragment() {
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when(item!!.itemId){
                 R.id.action_dup -> {
-                    //adapter.addMovie(position)
+                    adapter.addMovies()
                     mode!!.finish()
                 }
                 R.id.action_rem -> {
-                    //adapter.deleteMovie(position)
+                    adapter.deleteMovies()
                     mode!!.finish()
                 }
             }
@@ -155,6 +173,35 @@ class GalleryFragment : Fragment() {
         }
         override fun onDestroyActionMode(mode: ActionMode?) {
         }
+    }
+
+
+    override fun onOverflowMenuClickedFromAdapter(view: View, position: Int) {
+        Log.d("test", "called")
+        val popup = PopupMenu(context!!, view)
+        val menuInflater = popup.menuInflater
+        menuInflater.inflate(R.menu.movie_list_toolbar, popup.menu)
+        popup.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.action_dup -> {
+                    adapter.addMovies(position)
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.action_rem -> {
+                    adapter.deleteMovies(position)
+                    return@setOnMenuItemClickListener true
+                }
+                else ->{
+                    return@setOnMenuItemClickListener false
+                }
+            }
+        }
+// show icon on the popup menu!!
+        //val menuHelper = MenuPopupHelper(this.context!!, popup.menu as MenuBuilder, view)
+//        menuHelper.setForceShowIcon(true)
+//        menuHelper.gravity = Gravity.END
+//        menuHelper.show()
+        popup.show()
     }
 
     /**

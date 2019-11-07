@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
@@ -34,6 +35,12 @@ class ListViewActivity : AppCompatActivity(), GalleryFragment.OnListViewInteract
         supportFragmentManager.beginTransaction().replace(view.id, fragment).commit()
     }
 
+    override fun onCreateView(name: String?, context: Context?, attrs: AttributeSet?): View? {
+        return super.onCreateView(name, context, attrs)
+
+        //inflater?.inflate(R.menu.movie_share, menu)
+
+    }
 //    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 //        return super.onCreateOptionsMenu(menu)
 //

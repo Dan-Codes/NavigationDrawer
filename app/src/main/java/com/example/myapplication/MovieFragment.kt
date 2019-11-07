@@ -1,13 +1,16 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_movie.*
+import kotlinx.android.synthetic.main.fragment_movie.movieView
+import kotlinx.android.synthetic.main.fragment_movie.view.*
 import java.io.Serializable
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,6 +30,7 @@ class MovieFragment : Fragment() {
             param1 = it.getSerializable(ARG_PARAM1) as MovieData
             param2 = it.getInt(ARG_PARAM2)
         }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +48,18 @@ class MovieFragment : Fragment() {
         ratingBar.rating = rate.toFloat()
         rating.text = "Rate: " + movie!!.vote_average.toString()
         movieOverview.text = movie!!.overview
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.movie_share, menu)
+        val share = menu?.findItem(R.id.action_share)!!.actionView
+        share.setOnClickListener {
+            val intentShare = Intent(Intent.ACTION_SEND)
+            intentShare.type = "text/plain"
+            intentShare.putExtra(Intent.EXTRA_TEXT , movieView.movieOverview.toString())
+            startActivity(intentShare)
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
